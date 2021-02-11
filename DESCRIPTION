@@ -1,0 +1,30 @@
+Package: anara
+Type: Package
+Title: Highlight Problems In Survey Data
+Version: 0.0.0.9000
+Authors@R:
+    c(person(given = "Patrick",
+             family = "Anker",
+             role = c("aut"),
+             email = "psanker@nyu.edu",
+             comment = c(ORCID = "0000-0003-2302-0445")),
+      person(given = "Mayarí",
+             family = "Montes de Oca",
+             role = c("aut", "cre"),
+             email = "mmd486@nyu.edu"),
+      person(given = "Global TIES for Children",
+             role = c("cph")))
+Maintainer: Patrick Anker <psanker@nyu.edu>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    data.table,
+    stringdist,
+    glue,
+    rlang,
+    stringi
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1

@@ -254,11 +254,11 @@ verify_fixes <- function(
         fixes[database == dbname & id_change == TRUE, unknown_changed_id := !change_to %in% reference[[db_id_col]] & !grepl("^unassigned|^unidentified", change_to, ignore.case = TRUE)]
       }
 
-      id_change_from <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE & change_from != "NULL", .(ID = change_from, Count = -1)] # Don't count NULL, the signifier that something was missing
+      id_change_from <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE & change_from != "NULL", .(id = change_from, Count = -1)] # Don't count NULL, the signifier that something was missing
 
       del_record <- fixes[database == dbname & missing_uid == FALSE & delete_request == TRUE, list(id = id, Count = -1)]
 
-      id_change_to <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE, .(ID = change_to, Count = 1)]
+      id_change_to <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE, .(id = change_to, Count = 1)]
 
       id_pool <- data.table::rbindlist(list(id_pool, id_change_from, id_change_to, del_record), use.names = TRUE)
       id_pool <- id_pool[, .(Count = sum(Count)), by = id]

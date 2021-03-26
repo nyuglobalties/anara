@@ -120,7 +120,7 @@ correct_single <- function(corrections, database, unique_id_col, id_col, verbose
 
     type_query <- bquote(typeof(.(ovsym)))
 
-    if (ACCEPTED[, typeof(change.to)] != DT[, eval(type_query)]) {
+    if (ACCEPTED[, typeof(change_to)] != DT[, eval(type_query)]) {
       message("Converted ", ov, " to a character vector. Please compensate for this!")
       query <- bquote(.(ovsym) := as.character(.(ovsym)))
       DT[, eval(query)]

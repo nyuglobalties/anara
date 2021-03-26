@@ -175,7 +175,7 @@ verify_fixes <- function(
   )
 
   # Drop totally empty fix requests -- not useful
-  fixes[, ignore := apply(.SD, 1L, function(x) all(is.na(x) | grepl("^\\s*$", x)), .SDcols = c("what", "change_from", "change_to")]
+  fixes[, ignore := apply(.SD, 1L, function(x) all(is.na(x) | grepl("^\\s*$", x))), .SDcols = c("what", "change_from", "change_to")]
   fixes <- fixes[ignore == FALSE]
   fixes[, ignore := NULL]
 

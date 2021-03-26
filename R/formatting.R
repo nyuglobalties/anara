@@ -1,3 +1,16 @@
+#' Puts a dataset into the fix format
+#' 
+#' Generally only used from `anara::verify_ids`
+#' 
+#' @param dat The result of `anara::verify_ids`
+#' @param id_col The name of the ID, or primary key, column.
+#' @param unique_id_col The name of the row ID, or surrogate key,
+#'   column.
+#' @param database_col The name of the column that stores the database names
+#' @param var_pool The pool of metric and issue columns
+#' @param review_fields The names of fields to be used for verification
+#' @param edit_fields The names of the fix columns
+#' @return `dat` in fix format
 fix_format <- function(
   dat,
   id_col,

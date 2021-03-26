@@ -25,6 +25,8 @@ Imports:
     stringdist,
     glue,
     rlang,
-    stringi
+    stringi,
+    digest,
+    openxlsx
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

@@ -1,3 +1,25 @@
+#' Verify record consistency across databases
+#' 
+#' Compares demographic information across datasets to determine
+#' if the entity identified with ID `x` is the same across all
+#' datasets.
+#' 
+#' @param dat_list A named list of `data.frames`
+#' @param id_col The name of the ID, or primary key, column.
+#'   For consistency, should be the same across datasets.
+#' @param unique_id_col The name of the row ID, or surrogate key,
+#'   column. For consistency, should be the same across datasets.
+#' @param file If not `NULL`, a path to where the output spreadsheet
+#'   will be saved.
+#' @param database_col The column name to store the `dat_list` names
+#' @param variables A character vector of integer or character columns
+#'   to be used for comparison across datasets.
+#' @param extra_metrics A `metrics()` call that contains a collection of
+#'   `metric()` calls
+#' @param verbose Enables logging
+#' @param ... Extra parameters passed to `anara::fix_format`
+#' @return A `data.frame` in the fix format
+#' 
 #' @export
 verify_ids <- function(
   dat_list,

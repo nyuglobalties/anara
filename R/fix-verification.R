@@ -174,6 +174,11 @@ verify_fixes <- function(
     edit_fields
   )
 
+  # Drop totally empty fix requests -- not useful
+  fixes[, ignore := apply(.SD, 1L, function(x) all(is.na(x) | grepl("^\\s*$", x)), .SDcols = c("what", "change_from", "change_to")]
+  fixes <- fixes[ignore == FALSE]
+  fixes[, ignore := NULL]
+
   fixes[, missing_uid := FALSE]
   fixes[, duplicate_changes := FALSE]
   fixes[, multiple_conclusions := FALSE]

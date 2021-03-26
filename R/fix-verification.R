@@ -235,7 +235,7 @@ verify_fixes <- function(
         } else if (".others" %in% names(id_col)) {
           id_col[[".others"]]
         } else {
-          stop("Database '", dbname, "' not found in id_col", call. = FALSE)
+          stopg("Database '{dbname}' not found in id_col")
         }
       }
 
@@ -245,7 +245,7 @@ verify_fixes <- function(
 
       q1 <- bquote(DB[, unique(.(idcolsym))])
       id_pool <- DB[, .(Count = .N), by = db_id_col]
-      data.table::setnames(id_pool, db_id_col, "id")
+      data.table::setnames(id_pool, db_id_col, "entity_id")
 
       fixes[database == dbname, id_change := what == ..db_id_col]
 
@@ -254,17 +254,17 @@ verify_fixes <- function(
         fixes[database == dbname & id_change == TRUE, unknown_changed_id := !change_to %in% reference[[db_id_col]] & !grepl("^unassigned|^unidentified", change_to, ignore.case = TRUE)]
       }
 
-      id_change_from <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE & change_from != "NULL", .(id = change_from, Count = -1)] # Don't count NULL, the signifier that something was missing
+      id_change_from <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE & change_from != "NULL", .(entity_id = change_from, Count = -1)] # Don't count NULL, the signifier that something was missing
 
-      del_record <- fixes[database == dbname & missing_uid == FALSE & delete_request == TRUE, list(id = id, Count = -1)]
+      del_record <- fixes[database == dbname & missing_uid == FALSE & delete_request == TRUE, list(entity_id = id, Count = -1)]
 
-      id_change_to <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE, .(id = change_to, Count = 1)]
+      id_change_to <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE, .(entity_id = change_to, Count = 1)]
 
       id_pool <- data.table::rbindlist(list(id_pool, id_change_from, id_change_to, del_record), use.names = TRUE)
-      id_pool <- id_pool[, .(Count = sum(Count)), by = id]
+      id_pool <- id_pool[, .(Count = sum(Count)), by = entity_id]
 
-      existing_ids <- id_pool[Count > 1L, id]
-      removed_nonexistent_ids <- id_pool[Count < 0L, id]
+      existing_ids <- id_pool[Count > 1L, entity_id]
+      removed_nonexistent_ids <- id_pool[Count < 0L, entity_id]
 
       fixes[database == dbname & change_to %in% existing_ids, existing_id := TRUE]
       fixes[database == dbname & change_to %in% existing_ids, conflicting_id := as.character(change_to)]

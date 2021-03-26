@@ -182,7 +182,7 @@ verify_fixes <- function(
   fixes[, conflicting_id := ""]
   fixes[, existing_id := FALSE]
   fixes[, nonexistent_id_removed := FALSE]
-  fixes[, uid_count := .N, by = c("database", "UNIQUE_ID")]
+  fixes[, uid_count := .N, by = c("database", "unique_id")]
   fixes[, identical_request := grepl("^identical$", what, ignore.case = TRUE)]
   fixes[, delete_request := grepl("^whole obs", what, ignore.case = TRUE)]
 
@@ -309,7 +309,7 @@ verify_fixes <- function(
     fix_history[, historic_fixes := TRUE]
     fixes[, historic_fixes := FALSE]
 
-    fixes[, record_signature := apply(.SD, 1L, digest::digest, algo = "xxhash64"), .SDcols = c("UNIQUE_ID", "database")]
+    fixes[, record_signature := apply(.SD, 1L, digest::digest, algo = "xxhash64"), .SDcols = c("unique_id", "database")]
 
     total_fixes <- data.table::rbindlist(list(fix_history, fixes), use.names = TRUE, fill = TRUE)
 
@@ -408,9 +408,9 @@ integrity_report <- function(verified_fixes, file = NULL, include_problem_cases 
   }
 
   cols <- if (isTRUE(include_problem_cases) && any(verified_fixes[, problem_case])) {
-    c("database", "UNIQUE_ID", "conflicting_id", err_cols)
+    c("database", "unique_id", "conflicting_id", err_cols)
   } else {
-    c("database", "UNIQUE_ID", "conflicting_id", setdiff(err_cols, "problem_case"))
+    c("database", "unique_id", "conflicting_id", setdiff(err_cols, "problem_case"))
   }
 
   issues <- verified_fixes[state == "rejected", ..cols]
@@ -474,7 +474,7 @@ fix_application_diagnostics <- function(
     DB <- as.data.table(databases[[ndat]])
 
     for (fh in verified_fixes[database == ndat, fixhash]) {
-      verified_fixes[fixhash == fh, applied := identical(verified_fixes[fixhash == fh, as.character(change_to)], as.character(DB[DB[[uids[[ndat]]]] == verified_fixes[fixhash == fh, UNIQUE_ID], verified_fixes[fixhash == fh, WHAT], with = FALSE]))]
+      verified_fixes[fixhash == fh, applied := identical(verified_fixes[fixhash == fh, as.character(change_to)], as.character(DB[DB[[uids[[ndat]]]] == verified_fixes[fixhash == fh, unique_id], verified_fixes[fixhash == fh, WHAT], with = FALSE]))]
     }
   }
 

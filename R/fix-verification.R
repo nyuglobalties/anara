@@ -373,7 +373,6 @@ validate_fix_cols <- function(
 
   df <- data.table::as.data.table(df)
   data.table::setnames(df, edit_fields, names(edit_fields))
-  data.table::setnames(df, review_fields, names(review_fields))
 
   df[, fixhash := apply(.SD, 1L, digest::digest, algo = "xxhash64"), .SDcols = c("database", unique_id_col, "what", "change_from")]
   df[, reversehash := apply(.SD, 1L, digest::digest, algo = "xxhash64"), .SDcols = c("database", unique_id_col, "what", "change_to")]

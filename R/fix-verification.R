@@ -256,7 +256,8 @@ verify_fixes <- function(
 
       id_change_from <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE & change_from != "NULL", .(entity_id = change_from, Count = -1)] # Don't count NULL, the signifier that something was missing
 
-      del_record <- fixes[database == dbname & missing_uid == FALSE & delete_request == TRUE, list(entity_id = id, Count = -1)]
+      del_query <- bquote(list(entity_id = .(idcolsym), Count = -1))
+      del_record <- fixes[database == dbname & missing_uid == FALSE & delete_request == TRUE, eval(del_query)]
 
       id_change_to <- fixes[database == dbname & missing_uid == FALSE & id_change == TRUE & incomplete_record == FALSE, .(entity_id = change_to, Count = 1)]
 

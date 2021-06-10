@@ -320,7 +320,7 @@ verify_fixes <- function(
     total_fixes <- data.table::rbindlist(list(fix_history, fixes), use.names = TRUE, fill = TRUE)
 
     total_fixes[, previous_modification := vlapply(fixhash, function(x) x %in% reversehash)]
-    total_fixes[previous_modification == TRUE, old_modification := vcapply(fixhash, function(x) {
+    total_fixes[previous_modification == TRUE, old_modification := map_chr(fixhash, function(x) {
       total_fixes[reversehash == x, fixhash]
     })]
 

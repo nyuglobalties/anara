@@ -12,6 +12,7 @@ verify_ids(
   database_col = "database",
   variables = NULL,
   extra_metrics = NULL,
+  extra_cols = NULL,
   verbose = TRUE,
   ...
 )
@@ -35,6 +36,10 @@ to be used for comparison across datasets.}
 
 \item{extra_metrics}{A \code{metrics()} call that contains a collection of
 \code{metric()} calls}
+
+\item{extra_cols}{A character vector of columns to be included in the output
+verification spreadsheet, mainly for reference and support during
+manual inspection}
 
 \item{verbose}{Enables logging}
 

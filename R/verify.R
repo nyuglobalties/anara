@@ -16,6 +16,9 @@
 #'   to be used for comparison across datasets.
 #' @param extra_metrics A `metrics()` call that contains a collection of
 #'   `metric()` calls
+#' @param extra_cols A character vector of columns to be included in the output
+#'   verification spreadsheet, mainly for reference and support during
+#'   manual inspection
 #' @param verbose Enables logging
 #' @param ... Extra parameters passed to `anara::fix_format`
 #' @return A `data.frame` in the fix format
@@ -29,18 +32,20 @@ verify_ids <- function(
   database_col = "database",
   variables = NULL,
   extra_metrics = NULL,
+  extra_cols = NULL,
   verbose = TRUE,
   ...
 ) {
   stopifnot(is.character(id_col))
   stopifnot(is.character(unique_id_col))
   stopifnot(length(id_col) == 1 && length(unique_id_col) == 1)
+  stopifnot(is.null(extra_cols) || is.character(extra_cols))
 
   validate_dat_list(dat_list)
   validate_control_column(id_col, dat_list, "ID column")
   validate_control_column(unique_id_col, dat_list, "record unique ID column")
 
-  var_pool <- variable_pool(dat_list, variables, extra_metrics)
+  var_pool <- variable_pool(dat_list, c(variables, extra_cols), extra_metrics)
   selected_data <- select_variable_pool(
     dat_list,
     id_col,

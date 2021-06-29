@@ -100,7 +100,13 @@ correct_single <- function(corrections, database, unique_id_col, id_col, verbose
 
   # Records marked to delete have "Whole Observation" in WHAT
   deletions <- ACCEPTED[grepl("^whole obs", what, ignore.case = TRUE), unique_id]
+  del_hashes <- ACCEPTED[grepl("^whole obs", what, ignore.case = TRUE), fixhash]
   query <- bquote(!.(as.name(unique_id_col)) %in% deletions)
+
+  for (i in seq_along(deletions)) {
+    log_db("(", del_hashes[i], ") ", deletions[i], " deleted")
+  }
+
   DT <- DT[eval(query)]
 
   # Identical cases are those where the recorded data is approximately identical. In this situation,
@@ -108,6 +114,12 @@ correct_single <- function(corrections, database, unique_id_col, id_col, verbose
   if (nrow(ACCEPTED[grepl("^identical$", what, ignore.case = TRUE)]) > 0L) {
     reject_rows <- ACCEPTED[grepl("^identical$", what, ignore.case = TRUE), .(.rows = sample(.I, .N - 1)), by = id][, .rows]
     reject_uids <- ACCEPTED[reject_rows, unique_id]
+    reject_hashes <- ACCEPTED[reject_rows, fixhash]
+
+    for (i in seq_along(reject_uids)) {
+      log_db("(", reject_hashes[i], ") ", reject_uids[i], " identical dropped")
+    }
+
     query <- bquote(!.(as.name(unique_id_col)) %in% reject_uids)
     DT <- DT[eval(query)]
   }

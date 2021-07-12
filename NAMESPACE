@@ -3,6 +3,7 @@
 S3method(detect_issues,character)
 S3method(detect_issues,integer)
 export(apply_fixes)
+export(integrity_report)
 export(verify_fixes)
 export(verify_ids)
 importFrom(data.table,.I)

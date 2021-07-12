@@ -386,6 +386,19 @@ validate_fix_cols <- function(
   df
 }
 
+#' Produce a report on the integrity of proposed fixes
+#' 
+#' The integrity report provides diagnostic information to fix authors
+#' to resolve any internal data integrity issues (duplicates, referential
+#' integrity, loss of data, etc.)
+#' 
+#' @param verified_fixes Output of [anara::verify_fixes]
+#' @param file If not NULL, a path to where the integrity report should be saved
+#' @param include_problem_cases If a request has the `Problem` field being `TRUE`,
+#'   then the request will be treated as erroneous, even if no diagnostic flags
+#'   have been raised for that fix request
+#' @return A data.frame with the integrity report
+#' @export 
 integrity_report <- function(verified_fixes, file = NULL, include_problem_cases = TRUE) {
   stopifnot(inherits(verified_fixes, "data.frame"))
 

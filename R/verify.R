@@ -132,7 +132,7 @@ verify_fields_ <- function(dat, variables, tols, mets, id_col, verbose) {
       }
 
       if (!is.null(tols[[v]])) {
-        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]], tols[[v]]), by = id_col]
+        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]], tol = tols[[v]]), by = id_col]
       } else {
         dat[, paste0(v, "_issue") := detect_issues(.SD[[v]]), by = id_col]
       }

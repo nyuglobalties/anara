@@ -31,6 +31,7 @@ verify_ids <- function(
   file = NULL,
   database_col = "database",
   variables = NULL,
+  tolerances = NULL,
   extra_metrics = NULL,
   extra_cols = NULL,
   verbose = TRUE,
@@ -39,6 +40,7 @@ verify_ids <- function(
   stopifnot(is.character(id_col))
   stopifnot(is.character(unique_id_col))
   stopifnot(length(id_col) == 1 && length(unique_id_col) == 1)
+  stopifnot(is.null(tolerances) || is.list(tolerances))
   stopifnot(is.null(extra_cols) || is.character(extra_cols))
 
   validate_dat_list(dat_list)
@@ -61,7 +63,7 @@ verify_ids <- function(
   dat[, ("has_duplicate") := .N > 1, by = c(id_col, database_col)]
 
   data.table::setkeyv(dat, id_col)
-  verify_fields_(dat, variables, extra_metrics, id_col, verbose)
+  verify_fields_(dat, variables, tolerances, extra_metrics, id_col, verbose)
   add_num_issues_(dat, id_col)
 
   formatted_dat <- fix_format(
@@ -120,7 +122,7 @@ add_database_var <- function(dat_list, database_col) {
   dat_list
 }
 
-verify_fields_ <- function(dat, variables, mets, id_col, verbose) {
+verify_fields_ <- function(dat, variables, tols, mets, id_col, verbose) {
   if (!is.null(variables)) {
     for (v in variables) {
       if (isTRUE(verbose)) messageg("Detecting default issues for '{v}'")
@@ -129,7 +131,11 @@ verify_fields_ <- function(dat, variables, mets, id_col, verbose) {
         dat[, (v) := as.integer(dat[[v]])]
       }
 
-      dat[, paste0(v, "_issue") := detect_issues(.SD[[v]]), by = id_col]
+      if (!is.null(tols[[v]])) {
+        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]], tols[[v]]), by = id_col]
+      } else {
+        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]]), by = id_col]
+      }
     }
   }
 

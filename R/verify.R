@@ -14,6 +14,12 @@
 #' @param database_col The column name to store the `dat_list` names
 #' @param variables A character vector of integer or character columns
 #'   to be used for comparison across datasets.
+#' @param tolerances If not `NULL`, a `list` of parameters to be used as tolerances.
+#'   The list names must be variable names provided to `variables`, and the type
+#'   of tolerances depends on the variable:
+#'   * If the variable is an integer, the tolerance is the maximum difference allowed
+#'   * If the variable is a character, the tolerance is maximum dissimilarity allowed,
+#'     measured between 0 and 1.
 #' @param extra_metrics A `metrics()` call that contains a collection of
 #'   `metric()` calls
 #' @param extra_cols A character vector of columns to be included in the output
@@ -22,8 +28,29 @@
 #' @param verbose Enables logging
 #' @param ... Extra parameters passed to `anara::fix_format`
 #' @return A `data.frame` in the fix format
-#' 
 #' @export
+#' 
+#' @examples
+#' if (FALSE) {
+#'   anara::verify_ids(
+#'     list(
+#'       database1 = dat_1,
+#'       database2 = dat_2
+#'     ),
+#'     id_col = "participant_id",
+#'     unique_id_col = "unique_id",
+#'     variables = c("female", "grade", "teacher_name", "form"),
+#'     tolerances = list(
+#'       form = 0,
+#'       teacher_name = 0.05
+#'     ),
+#'     extra_cols = c(
+#'       "start", "end",
+#'       "incdnt_01", "incdnt_01_o", "incdnt_02", "incdnt_02_o"
+#'     ),
+#'     file = file.path("path", "to", "issues.csv")
+#'   )
+#' } 
 verify_ids <- function(
   dat_list,
   id_col,

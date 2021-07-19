@@ -11,6 +11,7 @@ verify_ids(
   file = NULL,
   database_col = "database",
   variables = NULL,
+  tolerances = NULL,
   extra_metrics = NULL,
   extra_cols = NULL,
   verbose = TRUE,
@@ -34,6 +35,15 @@ will be saved.}
 \item{variables}{A character vector of integer or character columns
 to be used for comparison across datasets.}
 
+\item{tolerances}{If not \code{NULL}, a \code{list} of parameters to be used as tolerances.
+The list names must be variable names provided to \code{variables}, and the type
+of tolerances depends on the variable:
+\itemize{
+\item If the variable is an integer, the tolerance is the maximum difference allowed
+\item If the variable is a character, the tolerance is maximum dissimilarity allowed,
+measured between 0 and 1.
+}}
+
 \item{extra_metrics}{A \code{metrics()} call that contains a collection of
 \code{metric()} calls}
 
@@ -52,4 +62,26 @@ A \code{data.frame} in the fix format
 Compares demographic information across datasets to determine
 if the entity identified with ID \code{x} is the same across all
 datasets.
+}
+\examples{
+if (FALSE) {
+  anara::verify_ids(
+    list(
+      database1 = dat_1,
+      database2 = dat_2
+    ),
+    id_col = "participant_id",
+    unique_id_col = "unique_id",
+    variables = c("female", "grade", "teacher_name", "form"),
+    tolerances = list(
+      form = 0,
+      teacher_name = 0.05
+    ),
+    extra_cols = c(
+      "start", "end",
+      "incdnt_01", "incdnt_01_o", "incdnt_02", "incdnt_02_o"
+    ),
+    file = file.path("path", "to", "issues.csv")
+  )
+} 
 }

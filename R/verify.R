@@ -14,6 +14,12 @@
 #' @param database_col The column name to store the `dat_list` names
 #' @param variables A character vector of integer or character columns
 #'   to be used for comparison across datasets.
+#' @param tolerances If not `NULL`, a `list` of parameters to be used as tolerances.
+#'   The list names must be variable names provided to `variables`, and the type
+#'   of tolerances depends on the variable:
+#'   * If the variable is an integer, the tolerance is the maximum difference allowed
+#'   * If the variable is a character, the tolerance is maximum dissimilarity allowed,
+#'     measured between 0 and 1.
 #' @param extra_metrics A `metrics()` call that contains a collection of
 #'   `metric()` calls
 #' @param extra_cols A character vector of columns to be included in the output
@@ -22,8 +28,29 @@
 #' @param verbose Enables logging
 #' @param ... Extra parameters passed to `anara::fix_format`
 #' @return A `data.frame` in the fix format
-#' 
 #' @export
+#' 
+#' @examples
+#' if (FALSE) {
+#'   anara::verify_ids(
+#'     list(
+#'       database1 = dat_1,
+#'       database2 = dat_2
+#'     ),
+#'     id_col = "participant_id",
+#'     unique_id_col = "unique_id",
+#'     variables = c("female", "grade", "teacher_name", "form"),
+#'     tolerances = list(
+#'       form = 0,
+#'       teacher_name = 0.05
+#'     ),
+#'     extra_cols = c(
+#'       "start", "end",
+#'       "incdnt_01", "incdnt_01_o", "incdnt_02", "incdnt_02_o"
+#'     ),
+#'     file = file.path("path", "to", "issues.csv")
+#'   )
+#' } 
 verify_ids <- function(
   dat_list,
   id_col,
@@ -31,6 +58,7 @@ verify_ids <- function(
   file = NULL,
   database_col = "database",
   variables = NULL,
+  tolerances = NULL,
   extra_metrics = NULL,
   extra_cols = NULL,
   verbose = TRUE,
@@ -39,6 +67,7 @@ verify_ids <- function(
   stopifnot(is.character(id_col))
   stopifnot(is.character(unique_id_col))
   stopifnot(length(id_col) == 1 && length(unique_id_col) == 1)
+  stopifnot(is.null(tolerances) || is.list(tolerances))
   stopifnot(is.null(extra_cols) || is.character(extra_cols))
 
   validate_dat_list(dat_list)
@@ -61,7 +90,7 @@ verify_ids <- function(
   dat[, ("has_duplicate") := .N > 1, by = c(id_col, database_col)]
 
   data.table::setkeyv(dat, id_col)
-  verify_fields_(dat, variables, extra_metrics, id_col, verbose)
+  verify_fields_(dat, variables, tolerances, extra_metrics, id_col, verbose)
   add_num_issues_(dat, id_col)
 
   formatted_dat <- fix_format(
@@ -120,7 +149,7 @@ add_database_var <- function(dat_list, database_col) {
   dat_list
 }
 
-verify_fields_ <- function(dat, variables, mets, id_col, verbose) {
+verify_fields_ <- function(dat, variables, tols, mets, id_col, verbose) {
   if (!is.null(variables)) {
     for (v in variables) {
       if (isTRUE(verbose)) messageg("Detecting default issues for '{v}'")
@@ -129,7 +158,11 @@ verify_fields_ <- function(dat, variables, mets, id_col, verbose) {
         dat[, (v) := as.integer(dat[[v]])]
       }
 
-      dat[, paste0(v, "_issue") := detect_issues(.SD[[v]]), by = id_col]
+      if (!is.null(tols[[v]])) {
+        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]], tol = tols[[v]]), by = id_col]
+      } else {
+        dat[, paste0(v, "_issue") := detect_issues(.SD[[v]]), by = id_col]
+      }
     }
   }
 

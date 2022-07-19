@@ -1,5 +1,5 @@
 #' Apply fixes to databases
-#' 
+#'
 #' @param databases A named list of `data.frame` objects The list names correspond
 #'   to the entry in the `database` column of the fix file.
 #' @param fixes A `data.frame` containing the *verified* fixes. Must have
@@ -9,19 +9,17 @@
 #' @param id_col The column name for the column that is the primary key
 #'   in all `databases`
 #' @param verbose Produces logging messages if `TRUE`
-#' @param force_fix If `TRUE`, applies fixes identified as problematic in 
+#' @param force_fix If `TRUE`, applies fixes identified as problematic in
 #'   `anara::verify_fixes`. Generally an unsafe operation!
 #' @return A list of corrected `data.frames`
-#' 
+#'
 #' @export
-apply_fixes <- function(
-  databases,
-  fixes,
-  unique_id_col,
-  id_col,
-  verbose = FALSE,
-  force_fix = FALSE
-) {
+apply_fixes <- function(databases,
+                        fixes,
+                        unique_id_col,
+                        id_col,
+                        verbose = FALSE,
+                        force_fix = FALSE) {
   correct_multiple(
     fixes,
     databases,
@@ -112,7 +110,7 @@ correct_single <- function(corrections, database, unique_id_col, id_col, verbose
   # Identical cases are those where the recorded data is approximately identical. In this situation,
   # randomly select which record to keep, grouped by ID
   if (nrow(ACCEPTED[grepl("^identical$", what, ignore.case = TRUE)]) > 0L) {
-    reject_rows <- ACCEPTED[grepl("^identical$", what, ignore.case = TRUE), .(.rows = sample(.I, .N - 1)), by = id][, .rows]
+    reject_rows <- ACCEPTED[grepl("^identical$", what, ignore.case = TRUE), .(.rows = sample(.I, .N - 1)), by = c(id_col)][, .rows]
     reject_uids <- ACCEPTED[reject_rows, unique_id]
     reject_hashes <- ACCEPTED[reject_rows, fixhash]
 

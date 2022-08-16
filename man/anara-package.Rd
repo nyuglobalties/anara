@@ -6,8 +6,7 @@
 \alias{anara-package}
 \title{anara: Highlight Problems In Survey Data}
 \description{
-More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
 }
 \author{
 \strong{Maintainer}: Mayarí Montes de Oca \email{mmd486@nyu.edu}

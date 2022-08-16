@@ -26,11 +26,11 @@ not_subset_matrix <- function(x) {
   is_subset <- outer(
     x,
     x,
-    function(.x, .y) map2(.x, .y, is_subset_func)
+    function(.x, .y) lapply2(.x, .y, is_subset_func)
   )
 
   original_dims <- dim(is_subset)
-  isnt_subset <- map_lgl(is_subset, `!`)
+  isnt_subset <- vlapply(is_subset, `!`)
   dim(isnt_subset) <- original_dims
 
   isnt_subset

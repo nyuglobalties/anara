@@ -1,7 +1,5 @@
 #' @importFrom data.table .SD .N `:=` .I as.data.table
 #' @importFrom glue glue glue_collapse
-#' @importFrom rlang is_logical is_true set_names
-#' @importFrom utils read.csv
 #' @keywords internal
 "_PACKAGE"
 

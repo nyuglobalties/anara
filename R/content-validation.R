@@ -7,7 +7,7 @@ validate_dat_list <- function(dat_list) {
     stop0("No data to verify in `dat_list`")
   }
 
-  is_df <- map_lgl(dat_list, is.data.frame)
+  is_df <- vlapply(dat_list, is.data.frame)
 
   if (!all(is_df)) {
     stopg(c(
@@ -18,7 +18,7 @@ validate_dat_list <- function(dat_list) {
 }
 
 validate_control_column <- function(column, dat_list, err_msg) {
-  has_ctrl_col <- map_lgl(dat_list, function(.x) column %in% names(.x))
+  has_ctrl_col <- vlapply(dat_list, function(.x) column %in% names(.x))
 
   if (!all(has_ctrl_col)) {
     stopg(c(

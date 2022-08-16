@@ -83,5 +83,5 @@ if (FALSE) {
     ),
     file = file.path("path", "to", "issues.csv")
   )
-} 
+}
 }

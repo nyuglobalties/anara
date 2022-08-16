@@ -1,9 +1,9 @@
 #' Verify record consistency across databases
-#' 
+#'
 #' Compares demographic information across datasets to determine
 #' if the entity identified with ID `x` is the same across all
 #' datasets.
-#' 
+#'
 #' @param dat_list A named list of `data.frames`
 #' @param id_col The name of the ID, or primary key, column.
 #'   For consistency, should be the same across datasets.
@@ -29,7 +29,7 @@
 #' @param ... Extra parameters passed to `anara::fix_format`
 #' @return A `data.frame` in the fix format
 #' @export
-#' 
+#'
 #' @examples
 #' if (FALSE) {
 #'   anara::verify_ids(
@@ -50,20 +50,18 @@
 #'     ),
 #'     file = file.path("path", "to", "issues.csv")
 #'   )
-#' } 
-verify_ids <- function(
-  dat_list,
-  id_col,
-  unique_id_col,
-  file = NULL,
-  database_col = "database",
-  variables = NULL,
-  tolerances = NULL,
-  extra_metrics = NULL,
-  extra_cols = NULL,
-  verbose = TRUE,
-  ...
-) {
+#' }
+verify_ids <- function(dat_list,
+                       id_col,
+                       unique_id_col,
+                       file = NULL,
+                       database_col = "database",
+                       variables = NULL,
+                       tolerances = NULL,
+                       extra_metrics = NULL,
+                       extra_cols = NULL,
+                       verbose = TRUE,
+                       ...) {
   stopifnot(is.character(id_col))
   stopifnot(is.character(unique_id_col))
   stopifnot(length(id_col) == 1 && length(unique_id_col) == 1)
@@ -118,7 +116,7 @@ verify_ids <- function(
 
 variable_pool <- function(dat_list, variables, metrics) {
   all_vars <- variables %??% character()
-  all_content_vars <- unique(unlist(map(dat_list, names)))
+  all_content_vars <- unique(unlist(lapply(dat_list, names)))
 
   if (!is.null(metrics)) {
     all_vars <- unique(c(variables, extract_variables(metrics)))
@@ -130,7 +128,7 @@ variable_pool <- function(dat_list, variables, metrics) {
 select_variable_pool <- function(dat_list, id_col, unique_id_col, var_pool) {
   all_vars <- c(unique_id_col, id_col, var_pool)
 
-  map(dat_list, function(.x) {
+  lapply(dat_list, function(.x) {
     var_subset <- names(.x)[names(.x) %in% all_vars]
 
     if (data.table::is.data.table(.x)) {

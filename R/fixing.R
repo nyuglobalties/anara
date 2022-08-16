@@ -52,7 +52,7 @@ correct_single <- function(corrections, database, unique_id_col, id_col, verbose
     }
 
     corrections <- if (grepl("\\.csv$", corrections)) {
-      read.csv(corrections, stringsAsFactors = FALSE, na.strings = c("", "NA"))
+      utils::read.csv(corrections, stringsAsFactors = FALSE, na.strings = c("", "NA"))
     } else if (grepl("\\.xlsx", corrections)) {
       openxlsx::read.xlsx(corrections, na.strings = c("", "NA"))
     } else {

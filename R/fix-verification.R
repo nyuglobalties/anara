@@ -8,14 +8,12 @@ validate_foreign_keys <- function(fixes, context) {
   present_keys <- foreign_keys[foreign_keys %in% names(DB)]
 }
 
-validate_key_structure <- function(
-  databases,
-  reference,
-  primary_key,
-  foreign_keys,
-  database_names = NULL
-) {
-  tk_assert(is.data.frame(reference) || is.character(reference))
+validate_key_structure <- function(databases,
+                                   reference,
+                                   primary_key,
+                                   foreign_keys,
+                                   database_names = NULL) {
+  anara_assert(is.data.frame(reference) || is.character(reference))
 
   working_dbs <- validate_db_struct(databases, database_names)
 
@@ -36,8 +34,8 @@ validate_key_structure <- function(
 }
 
 validate_db_struct <- function(databases, database_names) {
-  tk_assert(is.data.frame(databases) || is.list(databases))
-  tk_assert(is.character(database_names) || is.null(database_names))
+  anara_assert(is.data.frame(databases) || is.list(databases))
+  anara_assert(is.character(database_names) || is.null(database_names))
 
   missing_err <- c(
     "Database names must be provided, either with `database_names` ",
@@ -51,27 +49,27 @@ validate_db_struct <- function(databases, database_names) {
   if (!is.data.frame(databases)) {
     if (is.list(databases)) {
       if (!all(vlapply(databases, is.data.frame))) {
-        tk_err("List of databases must be a `list` of data.frames")
+        anara_err("List of databases must be a `list` of data.frames")
       }
 
       num_databases <- length(databases)
 
       if (is.null(database_names) && is.null(names(databases))) {
-        tk_err(missing_err)
+        anara_err(missing_err)
       } else if (is.null(database_names) && !is.null(names(databases))) {
         database_names <- names(databases)
       }
     }
   }
 
-  tk_assert(length(database_names) == num_databases)
+  anara_assert(length(database_names) == num_databases)
 
   if (any(vlapply(database_names, duplicated))) {
-    tk_err(no_duplicates_err)
+    anara_err(no_duplicates_err)
   }
 
   if (any(vlapply(database_names, is.na))) {
-    tk_err(no_na_err)
+    anara_err(no_na_err)
   }
 
   if (is.data.frame(databases)) {
@@ -86,23 +84,23 @@ validate_db_struct <- function(databases, database_names) {
 }
 
 database_key_set <- function(database, pk, fks, reference = FALSE, database_name = NULL) {
-  tk_assert(is.data.frame(database))
-  tk_assert(is.character(pk))
-  tk_assert(is.character(fks))
+  anara_assert(is.data.frame(database))
+  anara_assert(is.character(pk))
+  anara_assert(is.character(fks))
 
   if (!data.table::is.data.table(database)) {
     data.table::setDT(database)
   }
 
   if (!pk %in% names(database)) {
-    tk_err("Primary key {ui_value(pk)} not found in database {if (!is.null(database_name)) ui_value(database_name)}")
+    anara_err("Primary key {ui_value(pk)} not found in database {if (!is.null(database_name)) ui_value(database_name)}")
   }
 
   not_present_fks <- fks[!fks %in% names(database)]
 
   if (length(not_present_fks) > 0) {
     if (isTRUE(reference)) {
-      tk_warn("[{glue_collapse(ui_value(not_present_fks), ', ')}] not found in reference database")
+      anara_warn("[{glue_collapse(ui_value(not_present_fks), ', ')}] not found in reference database")
     }
 
     fks <- setdiff(fks, not_present_fks)
@@ -112,11 +110,11 @@ database_key_set <- function(database, pk, fks, reference = FALSE, database_name
 }
 
 #' Verifies the prospective fixes
-#' 
+#'
 #' Computes metrics to determine if the requested fixes are valid
 #' and won't cause record-level corruption. These fixes *don't*
 #' perform referential integrity checks. That must be done externally.
-#' 
+#'
 #' @param fixes A `data.frame` in the fix format
 #' @param id_col The name of the column that contains the primary key
 #' @param unique_id_col The name of the column that contains the surrogate key
@@ -135,25 +133,23 @@ database_key_set <- function(database, pk, fks, reference = FALSE, database_name
 #' @param edit_fields The names of the fix columns
 #' @return A `data.frame` of fixes with the "verified_fixes" attribute,
 #'   along with the fix verification metrics.
-#' 
-#' @export 
-verify_fixes <- function(
-  fixes,
-  id_col,
-  unique_id_col = "unique_id",
-  databases = NULL,
-  reference = NULL,
-  foreign_keys = NULL,
-  fix_history = NULL,
-  include_problem_cases = TRUE,
-  review_fields = c("problem", "verifier", "note"),
-  edit_fields = c(
-    what = "what",
-    change_to = "change_to",
-    change_from = "change_from"
-  ),
-  verbose = TRUE
-) {
+#'
+#' @export
+verify_fixes <- function(fixes,
+                         id_col,
+                         unique_id_col = "unique_id",
+                         databases = NULL,
+                         reference = NULL,
+                         foreign_keys = NULL,
+                         fix_history = NULL,
+                         include_problem_cases = TRUE,
+                         review_fields = c("problem", "verifier", "note"),
+                         edit_fields = c(
+                           what = "what",
+                           change_to = "change_to",
+                           change_from = "change_from"
+                         ),
+                         verbose = TRUE) {
   if (!inherits(fixes, "data.frame")) {
     if (is.list(fixes)) {
       if (all(vlapply(fixes, inherits, "data.frame"))) {
@@ -167,8 +163,8 @@ verify_fixes <- function(
   }
 
   fixes <- validate_fix_cols(
-    fixes, 
-    unique_id_col, 
+    fixes,
+    unique_id_col,
     id_col,
     review_fields,
     edit_fields
@@ -320,7 +316,7 @@ verify_fixes <- function(
     total_fixes <- data.table::rbindlist(list(fix_history, fixes), use.names = TRUE, fill = TRUE)
 
     total_fixes[, previous_modification := vlapply(fixhash, function(x) x %in% reversehash)]
-    total_fixes[previous_modification == TRUE, old_modification := map_chr(fixhash, function(x) {
+    total_fixes[previous_modification == TRUE, old_modification := vcapply(fixhash, function(x) {
       total_fixes[reversehash == x, fixhash]
     })]
 
@@ -350,13 +346,11 @@ verify_fixes <- function(
   fixes
 }
 
-validate_fix_cols <- function(
-  df, 
-  unique_id_col, 
-  id_col, 
-  review_fields,
-  edit_fields
-) {
+validate_fix_cols <- function(df,
+                              unique_id_col,
+                              id_col,
+                              review_fields,
+                              edit_fields) {
   if (!unique_id_col %in% names(df)) {
     stopg("Unique ID column '{unique_id_col}' not found in fixes")
   }
@@ -387,18 +381,18 @@ validate_fix_cols <- function(
 }
 
 #' Produce a report on the integrity of proposed fixes
-#' 
+#'
 #' The integrity report provides diagnostic information to fix authors
 #' to resolve any internal data integrity issues (duplicates, referential
 #' integrity, loss of data, etc.)
-#' 
+#'
 #' @param verified_fixes Output of [anara::verify_fixes]
 #' @param file If not NULL, a path to where the integrity report should be saved
 #' @param include_problem_cases If a request has the `Problem` field being `TRUE`,
 #'   then the request will be treated as erroneous, even if no diagnostic flags
 #'   have been raised for that fix request
 #' @return A data.frame with the integrity report
-#' @export 
+#' @export
 integrity_report <- function(verified_fixes, file = NULL, include_problem_cases = TRUE) {
   stopifnot(inherits(verified_fixes, "data.frame"))
 
@@ -448,12 +442,10 @@ integrity_report <- function(verified_fixes, file = NULL, include_problem_cases 
   verified_fixes
 }
 
-fix_application_diagnostics <- function(
-  verified_fixes,
-  databases,
-  unique_id_col,
-  verbose = FALSE
-) {
+fix_application_diagnostics <- function(verified_fixes,
+                                        databases,
+                                        unique_id_col,
+                                        verbose = FALSE) {
   stopifnot(inherits(verified_fixes, "data.frame"))
 
   if (!isTRUE(attr(verified_fixes, VERIFIED_FIXES_ATTR))) {

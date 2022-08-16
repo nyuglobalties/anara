@@ -1,9 +1,9 @@
 #' Define a metric
-#' 
+#'
 #' A metric is a definition of some comparison. By default,
 #' there are two "metrics": integer distance, and string similarity.
 #' This tool expands that toolkit to arbitrary comparisons.
-#' 
+#'
 #' @param variable A character vector of variables to run this metric on
 #' @param func A function that takes a single argument. This is evaluated
 #'   *by* entity ID.
@@ -30,16 +30,16 @@ is_metric <- function(x) {
 }
 
 #' A collection of metrics
-#' 
+#'
 #' Primarily used in the `extra_metrics` parameter of
 #' `anara::verify_ids`.
-#' 
+#'
 #' @param ... `metric` objects
 #' @return An object of type 'metrics'
 metrics <- function(...) {
   dots_list <- list(...)
 
-  are_metrics <- map_lgl(dots_list, is_metric)
+  are_metrics <- vlapply(dots_list, is_metric)
   stopifnot(all(are_metrics))
 
   structure(
@@ -54,6 +54,6 @@ extract_variables <- function(x) {
   if (is_metric(x)) {
     x$var
   } else {
-    unique(unlist(map(x, extract_variables)))
+    unique(unlist(lapply(x, extract_variables)))
   }
 }

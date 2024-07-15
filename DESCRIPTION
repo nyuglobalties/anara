@@ -1,7 +1,7 @@
 Package: anara
 Type: Package
 Title: Highlight Problems In Survey Data
-Version: 0.0.5
+Version: 0.0.6
 Authors@R:
     c(person(given = "Patrick",
              family = "Anker",
@@ -9,7 +9,7 @@ Authors@R:
              email = "psanker@nyu.edu",
              comment = c(ORCID = "0000-0003-2302-0445")),
       person(given = "Mayarí",
-             family = "Montes de Oca",
+             family = "Montes de Oca Salinas",
              role = c("aut", "cre"),
              email = "mmd486@nyu.edu"),
       person(given = "Global TIES for Children",
@@ -28,4 +28,4 @@ Imports:
     digest,
     openxlsx
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.2

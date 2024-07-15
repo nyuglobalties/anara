@@ -220,9 +220,21 @@ verify_fixes <- function(fixes,
 
       DB <- data.table::as.data.table(databases[[dbname]])
 
+
       query <- bquote(database == dbname & !.(as.name(unique_id_col)) %in% DB[[unique_id_col]])
       fixes[eval(query), missing_uid := TRUE]
-      fixes[database == dbname & (!(is.na(what) | grepl("^\\s*$|^whole obs|^identical$", what, ignore.case = TRUE))), what_not_found := !what %in% names(DB)]
+
+      fixes[, .empty_what := is.na(what) | grepl("^\\s*$", what)]
+      vars_to_fix <- fixes[
+        database == dbname & !(.empty_what == TRUE | delete_request == TRUE | identical_request == TRUE),
+        unique(what)
+      ]
+
+      for (v in vars_to_fix) {
+        fixes[database == dbname & what == v, what_not_found := !v %in% names(DB)]
+      }
+
+      fixes[, .empty_what := NULL]
 
       db_id_col <- if (!is.list(id_col)) {
         id_col
